@@ -12,8 +12,9 @@ export interface Story {
 
 const version = STORYBLOK_PREVIEW ? "draft" : "published";
 
-// Preview braucht den Preview-Token (Entwürfe); Production den Public-Token.
-const accessToken = STORYBLOK_PREVIEW ? STORYBLOK_PREVIEW_TOKEN : STORYBLOK_DELIVERY_TOKEN;
+// Preview braucht einen Preview-Token (Entwürfe); Production den Public-Token.
+// Fallback: Ist STORYBLOK_DELIVERY_TOKEN selbst ein Preview-Token, reicht er für beides.
+const accessToken = STORYBLOK_PREVIEW ? (STORYBLOK_PREVIEW_TOKEN ?? STORYBLOK_DELIVERY_TOKEN) : STORYBLOK_DELIVERY_TOKEN;
 const tokenName = STORYBLOK_PREVIEW ? "STORYBLOK_PREVIEW_TOKEN" : "STORYBLOK_DELIVERY_TOKEN";
 
 const client = !STORYBLOK_OFFLINE && accessToken ? createApiClient({ accessToken, region: "eu" }) : null;
