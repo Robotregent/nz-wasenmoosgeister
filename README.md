@@ -95,7 +95,10 @@ Beenden: `npx astro dev stop`.
 Die Vorschau läuft als eigener **Branch-Deploy** vom Branch `preview`, dort ist `STORYBLOK_PREVIEW=true` gesetzt (siehe `netlify.toml`).
 
 1. Netlify: *Site configuration → Build & deploy → Branches and deploy contexts* → Branch deploys für `preview` aktivieren.
-2. `git push origin main:preview` (bei Code-Änderungen wiederholen; Inhaltsänderungen brauchen keinen neuen Deploy)
+2. Code-Änderungen auf den Preview-Branch bringen (Inhaltsänderungen brauchen keinen neuen Deploy):
+   ```bash
+   git checkout preview && git merge main && git push && git checkout main
+   ```
 3. Storyblok: *Settings → Visual Editor* → zusätzliche Preview-URL `https://preview--<site-name>.netlify.app/` anlegen und als Standard setzen. Die lokale URL kann als zweite Umgebung bleiben.
 
 ## Projektstruktur
