@@ -6,7 +6,8 @@ const f = (type, display_name, extra = {}) => ({ type, display_name, pos: pos++,
 const text = (name, extra) => f("text", name, extra);
 const textarea = (name, extra) => f("textarea", name, extra);
 const image = (name = "Bild") => f("asset", name, { filetypes: ["images"] });
-const link = (name = "Link") => f("multilink", name, { email_link_type: true, asset_link_type: true, allow_target_blank: true });
+const link = (name = "Link", extra = {}) =>
+  f("multilink", name, { email_link_type: true, asset_link_type: true, allow_target_blank: true, ...extra });
 const bloks = (name, whitelist, extra = {}) =>
   f("bloks", name, { restrict_components: true, component_whitelist: whitelist, ...extra });
 
@@ -59,7 +60,12 @@ export const components = [
 
   nestable("nav_item", "Navigationspunkt", () => ({
     label: text("Bezeichnung", { required: true }),
-    link: link(),
+    link: link("Link", {
+      description: "Für eigene Seiten „Internal“ wählen – dann bleibt der Link auch nach einer Umbenennung gültig.",
+    }),
+    hidden: f("boolean", "Im Menü ausblenden", {
+      description: "Menüpunkt vorübergehend ausblenden, ohne ihn zu löschen. Unveröffentlichte Seiten werden automatisch ausgeblendet.",
+    }),
   }), { preview_field: "label" }),
 
   nestable("hero", "Hero (Startbild)", () => ({

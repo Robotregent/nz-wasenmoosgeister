@@ -66,6 +66,12 @@ const url = (href, target) => ({
   ...(target ? { target } : {}),
 });
 const ext = (href) => url(href, "_blank");
+
+/**
+ * Interner Link auf eine Story. `id` ist hier zunächst der Slug: Das Seed-Skript ersetzt ihn
+ * durch die echte Story-UUID, im Offline-Modus dient der Slug selbst als ID.
+ */
+const storyLink = (slug) => ({ id: slug, url: "", linktype: "story", fieldtype: "multilink", cached_url: slug });
 const email = (address) => ({ id: "", email: address, linktype: "email", fieldtype: "multilink", url: "", cached_url: "" });
 
 const emptyAsset = () => ({ id: null, alt: "", name: "", focus: "", title: "", filename: "", fieldtype: "asset" });
@@ -85,17 +91,17 @@ export const config = {
     site_claim: NARRENRUF,
     logo: emptyAsset(),
     nav: [
-      block("nav_item", { label: "Startseite", link: url("/") }),
-      block("nav_item", { label: "Fasnet 2026/27", link: url("/fasnet-2026-27") }),
-      block("nav_item", { label: "Geschichte", link: url("/geschichte") }),
-      block("nav_item", { label: "Zunftrat", link: url("/zunftrat") }),
-      block("nav_item", { label: "Mitglied werden", link: url("/mitglied-werden") }),
-      block("nav_item", { label: "Kontakt", link: url("/kontakt") }),
-      block("nav_item", { label: "Links", link: url("/links") }),
+      block("nav_item", { hidden: false, label: "Startseite", link: storyLink("home") }),
+      block("nav_item", { hidden: false, label: "Fasnet 2026/27", link: storyLink("fasnet-2026-27") }),
+      block("nav_item", { hidden: false, label: "Geschichte", link: storyLink("geschichte") }),
+      block("nav_item", { hidden: false, label: "Zunftrat", link: storyLink("zunftrat") }),
+      block("nav_item", { hidden: false, label: "Mitglied werden", link: storyLink("mitglied-werden") }),
+      block("nav_item", { hidden: false, label: "Kontakt", link: storyLink("kontakt") }),
+      block("nav_item", { hidden: false, label: "Links", link: storyLink("links") }),
     ],
     footer_nav: [
-      block("nav_item", { label: "Impressum", link: url("/impressum") }),
-      block("nav_item", { label: "Datenschutz", link: url("/datenschutz") }),
+      block("nav_item", { hidden: false, label: "Impressum", link: storyLink("impressum") }),
+      block("nav_item", { hidden: false, label: "Datenschutz", link: storyLink("datenschutz") }),
     ],
     address: `${ZUNFT_NAME}\nHöll 6\n88069 Tettnang`,
     email: MAIL,
@@ -118,8 +124,8 @@ export const pages = [
       quote: NARRENRUF,
       image: localAsset("/placeholders/hero.png", "Wasenmoosgeister im Nebel über dem Moor (Platzhalter)"),
       buttons: [
-        block("button", { label: "Fasnet 2026/27", link: url("/fasnet-2026-27"), variant: "accent" }),
-        block("button", { label: "Unsere Geschichte", link: url("/geschichte"), variant: "secondary" }),
+        block("button", { label: "Fasnet 2026/27", link: storyLink("fasnet-2026-27"), variant: "accent" }),
+        block("button", { label: "Unsere Geschichte", link: storyLink("geschichte"), variant: "secondary" }),
       ],
     }),
     block("teaser_grid", {
@@ -128,19 +134,19 @@ export const pages = [
         block("teaser", {
           title: "Geschichte",
           text: "Wie aus der Sage der Torfstecher im Wasenmoos 1993 eine Fasnetfigur wurde.",
-          link: url("/geschichte"),
+          link: storyLink("geschichte"),
           image: localAsset("/placeholders/moor.png", "Moorlandschaft (Platzhalter)"),
         }),
         block("teaser", {
           title: "Fasnet 2026/27",
           text: "Alle Termine der kommenden Fasnet – mit Infos und Downloads.",
-          link: url("/fasnet-2026-27"),
+          link: storyLink("fasnet-2026-27"),
           image: localAsset("/placeholders/fasnet.png", "Narren beim Umzug (Platzhalter)"),
         }),
         block("teaser", {
           title: "Mitglied werden",
           text: "Spaß an der Fasnet – mit der ganzen Familie. Wir freuen uns auf dich!",
-          link: url("/mitglied-werden"),
+          link: storyLink("mitglied-werden"),
           image: localAsset("/placeholders/haes.png", "Häs der Wasenmoosgeister (Platzhalter)"),
         }),
       ],
@@ -234,7 +240,7 @@ export const pages = [
       zip_city: "88069 Tettnang",
       email: MAIL,
       phone: "",
-      buttons: [block("button", { label: "Mitglied werden", link: url("/mitglied-werden"), variant: "primary" })],
+      buttons: [block("button", { label: "Mitglied werden", link: storyLink("mitglied-werden"), variant: "primary" })],
     }),
   ]),
 
@@ -325,4 +331,5 @@ export const pages = [
   ]),
 ];
 
-export const allStories = [config, ...pages];
+// config zuletzt: Ihre Menülinks verweisen auf die Seiten.
+export const allStories = [...pages, config];

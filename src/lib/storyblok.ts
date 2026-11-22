@@ -4,6 +4,7 @@ import { STORYBLOK_DELIVERY_TOKEN, STORYBLOK_OFFLINE, STORYBLOK_PREVIEW, STORYBL
 /** Minimale Story-Form, die wir im Frontend verwenden. */
 export interface Story {
   name: string;
+  uuid: string;
   slug: string;
   full_slug: string;
   published_at?: string | null;
@@ -30,7 +31,8 @@ function ensureSource() {
 
 async function offlineStories(): Promise<Story[]> {
   const { allStories } = await import("../../scripts/seed/content.mjs");
-  return allStories.map((s: any) => ({ ...s, full_slug: s.slug, published_at: null }));
+  // Offline dient der Slug als UUID (passend zu den Story-Links in content.mjs).
+  return allStories.map((s: any) => ({ ...s, uuid: s.slug, full_slug: s.slug, published_at: null }));
 }
 
 /** Alle Stories (Seiten + config). */
@@ -68,3 +70,7 @@ export const HIDDEN_SLUGS = new Set(["config"]);
 
 /** full_slug → Routen-Parameter für [...slug] ("home" = Startseite "/"). */
 export const toRouteParam = (fullSlug: string) => (fullSlug === "home" ? undefined : fullSlug.replace(/\/$/, ""));
+
+/** UUIDs aller ausgelieferten Seiten – Menüpunkte auf andere (unveröffentlichte/gelöschte) Seiten werden ausgeblendet. */
+export const pageUuids = (stories: Story[]) =>
+  new Set(stories.filter((s) => s.content.component === "page").map((s) => s.uuid));

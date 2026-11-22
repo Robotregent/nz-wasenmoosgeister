@@ -129,28 +129,51 @@ async function replaceLocalAssets(value) {
 
 // ---------- Stories ----------
 
+/** Ersetzt in Story-Links den Slug-Platzhalter (id = Slug) durch die echte Story-UUID. */
+function resolveStoryLinks(value, uuidBySlug) {
+  if (Array.isArray(value)) return value.map((v) => resolveStoryLinks(v, uuidBySlug));
+  if (value && typeof value === "object") {
+    if (value.fieldtype === "multilink" && value.linktype === "story") {
+      const uuid = uuidBySlug.get(value.cached_url);
+      if (!uuid) throw new Error(`Story-Link auf unbekannten Slug "${value.cached_url}"`);
+      return { ...value, id: uuid };
+    }
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveStoryLinks(v, uuidBySlug)]));
+  }
+  return value;
+}
+
 async function seedStories() {
   const overwrite = args.has("--overwrite");
+  const uuidBySlug = new Map();
+  const toWrite = [];
 
+  // 1. Durchlauf: vorhandene Stories finden, fehlende als Entwurf anlegen – so sind alle UUIDs
+  //    bekannt, bevor Inhalte mit Story-Links geschrieben werden.
   for (const seed of allStories) {
     const { stories } = await api("GET", `/stories?with_slug=${encodeURIComponent(seed.slug)}`);
-    const current = stories[0];
+    let current = stories[0];
 
     if (current && !overwrite) {
       console.log(`  = Story ${seed.slug} existiert bereits (übersprungen, --overwrite zum Überschreiben)`);
-      continue;
-    }
-
-    const content = await replaceLocalAssets(seed.content);
-    const story = { name: seed.name, slug: seed.slug, content };
-
-    if (current) {
-      await api("PUT", `/stories/${current.id}`, { story, force_update: 1, publish: 1 });
-      console.log(`  ↻ Story ${seed.slug}`);
     } else {
-      await api("POST", "/stories", { story, publish: 1 });
-      console.log(`  + Story ${seed.slug}`);
+      if (!current) {
+        const created = await api("POST", "/stories", {
+          story: { name: seed.name, slug: seed.slug, content: { component: seed.content.component } },
+        });
+        current = created.story;
+        console.log(`  + Story ${seed.slug}`);
+      }
+      toWrite.push({ seed, id: current.id });
     }
+    uuidBySlug.set(seed.slug, current.uuid);
+  }
+
+  // 2. Durchlauf: Inhalte mit aufgelösten Story-Links und hochgeladenen Assets schreiben, veröffentlichen.
+  for (const { seed, id } of toWrite) {
+    const content = resolveStoryLinks(await replaceLocalAssets(seed.content), uuidBySlug);
+    await api("PUT", `/stories/${id}`, { story: { name: seed.name, slug: seed.slug, content }, force_update: 1, publish: 1 });
+    console.log(`  ✓ Story ${seed.slug} veröffentlicht`);
   }
 }
 
