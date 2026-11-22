@@ -1,9 +1,9 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { getPayload } from "@storyblok/astro";
+import { getPayload, storyblokEditable } from "@storyblok/astro";
 import Base from "../layouts/Base.astro";
 import { StoryblokBlock } from "../storyblok";
-import { HIDDEN_SLUGS, getAllStories, getStory, toRouteParam, type Story } from "../lib/storyblok";
+import { HIDDEN_SLUGS, getAllStories, getStory, isPreview, toRouteParam, type Story } from "../lib/storyblok";
 
 export const getStaticPaths = (async () => {
   const stories = await getAllStories();
@@ -19,11 +19,15 @@ let config = Astro.props.config as Story | undefined;
 
 if (!story) {
   const slug = Astro.params.slug || "home";
-  if (HIDDEN_SLUGS.has(slug)) return new Response(null, { status: 404 });
+  // Die config-Story ist nur im Visual Editor als Vorschau (Header/Footer) erreichbar.
+  if (HIDDEN_SLUGS.has(slug) && !isPreview) return new Response(null, { status: 404 });
   const payload = await getPayload<object, Story>({ locals: Astro.locals });
   [story, config] = await Promise.all([payload.story ?? getStory(slug), getStory("config")]);
   if (!story) return new Response("Seite nicht gefunden", { status: 404 });
+  if (story.content.component === "config") config = story;
 }
+
+const isConfig = story.content.component === "config";
 
 const siteName = config?.content.site_name ?? "NZ Wasenmoosgeister Höll e.V.";
 const seoTitle = story.content.seo_title || (story.full_slug === "home" ? "" : story.name);
@@ -31,5 +35,19 @@ const title = seoTitle ? `${seoTitle} – ${siteName}` : siteName;
 ---
 
 <Base title={title} description={story.content.seo_description} config={config?.content ?? {}} updatedAt={story.published_at}>
-  <StoryblokBlock block={story.content} />
+  {
+    isConfig ? (
+      <section {...storyblokEditable(story.content)} class="container-page py-16">
+        <div class="max-w-2xl rounded-2xl border border-dashed border-moss-400 bg-moss-50 p-6 sm:p-8">
+          <h1 class="text-3xl font-semibold">Einstellungen</h1>
+          <p class="mt-3 text-bark-700">
+            Diese Story steuert Seitenname, Logo, Hauptnavigation, Footer-Links, Adresse und E-Mail. Änderungen siehst
+            du oben im Header und unten im Footer.
+          </p>
+        </div>
+      </section>
+    ) : (
+      <StoryblokBlock block={story.content} />
+    )
+  }
 </Base>

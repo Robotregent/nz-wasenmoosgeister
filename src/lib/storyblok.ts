@@ -1,5 +1,5 @@
 import { createApiClient } from "@storyblok/api-client";
-import { STORYBLOK_DELIVERY_TOKEN, STORYBLOK_OFFLINE, STORYBLOK_PREVIEW } from "astro:env/server";
+import { STORYBLOK_DELIVERY_TOKEN, STORYBLOK_OFFLINE, STORYBLOK_PREVIEW, STORYBLOK_PREVIEW_TOKEN } from "astro:env/server";
 
 /** Minimale Story-Form, die wir im Frontend verwenden. */
 export interface Story {
@@ -7,20 +7,21 @@ export interface Story {
   slug: string;
   full_slug: string;
   published_at?: string | null;
-  content: Record<string, any> & { component: string; _uid: string };
+  content: Record<string, any> & { component: string; _uid: string; _editable?: string };
 }
 
 const version = STORYBLOK_PREVIEW ? "draft" : "published";
 
-const client =
-  !STORYBLOK_OFFLINE && STORYBLOK_DELIVERY_TOKEN
-    ? createApiClient({ accessToken: STORYBLOK_DELIVERY_TOKEN, region: "eu" })
-    : null;
+// Preview braucht den Preview-Token (Entwürfe); Production den Public-Token.
+const accessToken = STORYBLOK_PREVIEW ? STORYBLOK_PREVIEW_TOKEN : STORYBLOK_DELIVERY_TOKEN;
+const tokenName = STORYBLOK_PREVIEW ? "STORYBLOK_PREVIEW_TOKEN" : "STORYBLOK_DELIVERY_TOKEN";
+
+const client = !STORYBLOK_OFFLINE && accessToken ? createApiClient({ accessToken, region: "eu" }) : null;
 
 function ensureSource() {
   if (!client && !STORYBLOK_OFFLINE) {
     throw new Error(
-      "STORYBLOK_DELIVERY_TOKEN fehlt. Token in .env bzw. in den Netlify-Umgebungsvariablen setzen " +
+      `${tokenName} fehlt. Token in .env bzw. in den Netlify-Umgebungsvariablen setzen ` +
         "oder STORYBLOK_OFFLINE=true für einen Build mit den lokalen Seed-Inhalten.",
     );
   }

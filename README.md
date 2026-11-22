@@ -14,6 +14,7 @@ npm install
 cp .env.example .env
 # in .env: STORYBLOK_OFFLINE=true
 npm run dev          # http://localhost:4321
+npm run dev:preview  # https://localhost:4321 – Live-Preview für den Visual Editor
 ```
 
 Mit `STORYBLOK_OFFLINE=true` kommen die Inhalte aus `scripts/seed/content.mjs`. So lässt sich die Seite ohne Storyblok-Zugang entwickeln oder vorführen.
@@ -33,9 +34,9 @@ Mit `STORYBLOK_OFFLINE=true` kommen die Inhalte aus `scripts/seed/content.mjs`. 
    Das Skript legt alle Block-Typen an und importiert alle Seiten mit den Texten der alten Website, dazu Beispiel-Termine und Platzhalterbilder. Es kann gefahrlos erneut laufen: Bereits vorhandene Seiten bleiben unverändert.
    - `npm run seed -- --components-only` aktualisiert nur die Block-Schemas.
    - `npm run seed -- --overwrite` überschreibt vorhandene Seiten mit dem Seed-Stand. **Achtung:** Änderungen aus dem CMS gehen dabei verloren.
-5. Unter *Settings → Access Tokens* zwei Tokens anlegen:
-   - **Public**: für die Live-Seite, liefert nur veröffentlichte Inhalte
-   - **Preview**: für die Vorschau, liefert auch Entwürfe
+5. Unter *Settings → Access Tokens* zwei Tokens anlegen bzw. kopieren und in `.env` eintragen:
+   - **Public** → `STORYBLOK_DELIVERY_TOKEN`: für die Live-Seite, liefert nur veröffentlichte Inhalte
+   - **Preview** → `STORYBLOK_PREVIEW_TOKEN`: für die Vorschau, liefert auch Entwürfe
 
 ### Inhalte pflegen
 
@@ -54,24 +55,34 @@ Neue Seiten bekommen den Inhaltstyp **Seite**. Ihre URL ergibt sich aus dem Slug
 
 1. Das Repository zu GitHub oder GitLab pushen und in Netlify unter *Add new site → Import an existing project* verbinden. Build-Einstellungen kommen aus `netlify.toml`.
 2. Unter *Site configuration → Environment variables* setzen:
-   - `STORYBLOK_DELIVERY_TOKEN` = **Public**-Token (Scope: Production)
-   - `STORYBLOK_DELIVERY_TOKEN` = **Preview**-Token (Scope: Branch deploys / `preview`)
+   - `STORYBLOK_DELIVERY_TOKEN` = **Public**-Token
+   - `STORYBLOK_PREVIEW_TOKEN` = **Preview**-Token (wird nur im Preview-Deploy genutzt)
    - `SITE_URL` = `https://nz-wasenmoosgeister-hoell.de`
 3. **Automatisch neu bauen bei Veröffentlichung:**
    - Netlify: *Site configuration → Build & deploy → Build hooks* → Hook „Storyblok publish“ (Branch `main`) anlegen und die URL kopieren.
    - Storyblok: *Settings → Webhooks* → neuer Webhook mit dieser URL, Trigger *Story published* und *Story unpublished*. Bei Downloads/Bildern zusätzlich *Asset replaced*.
 4. Domain unter *Domain management* verbinden. Netlify stellt das HTTPS-Zertifikat automatisch aus. Damit ist auch das alte Problem mit dem selbstsignierten Zertifikat gelöst.
 
-## 3. Visual Editor (Vorschau)
+## 3. Visual Editor / Live-Preview
 
-Die Vorschau läuft als eigener Netlify-**Branch-Deploy** vom Branch `preview`. Dort ist `STORYBLOK_PREVIEW=true` gesetzt (siehe `netlify.toml`): Seiten werden on demand gerendert, zeigen Entwürfe und aktualisieren sich live beim Tippen.
+Im Preview-Modus (`STORYBLOK_PREVIEW=true`) werden Seiten on demand gerendert, zeigen Entwürfe und aktualisieren sich live beim Tippen. Die Story `config` (Einstellungen) ist dort ebenfalls als Seite erreichbar, Änderungen an Navigation und Footer sieht man sofort.
+
+### Lokal
+
+1. `STORYBLOK_PREVIEW_TOKEN` in `.env` eintragen (Storyblok → *Settings → Access Tokens*, Zugriff „Preview“).
+2. `npm run dev:preview` starten (setzt Preview-Modus und HTTPS).
+3. Einmalig **https://localhost:4321/** im Browser öffnen und die Zertifikatswarnung akzeptieren (selbstsigniertes Zertifikat). Ohne diesen Schritt bleibt der Visual Editor leer.
+4. In Storyblok eine Story öffnen. Die Vorschau-URL ist auf `https://localhost:4321/` gestellt, und `home` hat den Real Path `/`.
+
+Beenden: `npx astro dev stop`.
+
+### Auf Netlify (für alle Redakteure)
+
+Die Vorschau läuft als eigener **Branch-Deploy** vom Branch `preview`, dort ist `STORYBLOK_PREVIEW=true` gesetzt (siehe `netlify.toml`).
 
 1. Netlify: *Site configuration → Build & deploy → Branches and deploy contexts* → Branch deploys für `preview` aktivieren.
-2. `git push origin main:preview` (bei Code-Änderungen wiederholen)
-3. Storyblok: *Settings → Visual Editor* → Location `https://preview--<site-name>.netlify.app/`
-4. Bei der Story `home` unter *Entry configuration → Real path* `/` eintragen
-
-Lokal geht es ebenfalls: `.env` mit `STORYBLOK_PREVIEW=true`, Preview-Token und `DEV_HTTPS=true`, dann `npm run dev` und `https://localhost:4321/` als Location eintragen.
+2. `git push origin main:preview` (bei Code-Änderungen wiederholen; Inhaltsänderungen brauchen keinen neuen Deploy)
+3. Storyblok: *Settings → Visual Editor* → zusätzliche Preview-URL `https://preview--<site-name>.netlify.app/` anlegen und als Standard setzen. Die lokale URL kann als zweite Umgebung bleiben.
 
 ## Projektstruktur
 
