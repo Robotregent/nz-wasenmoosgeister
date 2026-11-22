@@ -51,6 +51,20 @@ Mit `STORYBLOK_OFFLINE=true` kommen die Inhalte aus `scripts/seed/content.mjs`. 
 
 Neue Seiten bekommen den Inhaltstyp **Seite**. Ihre URL ergibt sich aus dem Slug.
 
+### Seiten ins Menü aufnehmen oder herausnehmen
+
+Alles ohne Code-Änderung, in Storyblok:
+
+| Ich möchte … | So geht's |
+|---|---|
+| eine neue Seite ins Menü aufnehmen | Seite anlegen (Inhaltstyp *Seite*) und veröffentlichen. In **Einstellungen** (`config`) unter *Hauptnavigation* einen *Navigationspunkt* hinzufügen. Beim Link **Internal** wählen und die Seite aussuchen. Veröffentlichen. |
+| einen Menüpunkt vorübergehend verstecken | Im Navigationspunkt **„Im Menü ausblenden“** aktivieren und *Einstellungen* veröffentlichen. Die Seite selbst bleibt erreichbar. |
+| eine Seite komplett offline nehmen | Bei der Seite **Unpublish** wählen. Sie verschwindet von der Website **und automatisch aus dem Menü**, der Menüpunkt muss nicht gelöscht werden. Nach erneutem Veröffentlichen ist beides wieder da. |
+| die Reihenfolge ändern | In *Einstellungen → Hauptnavigation* die Punkte per Drag & Drop verschieben. |
+| eine Seite umbenennen (Slug ändern) | Einfach umbenennen und veröffentlichen. Interne Links in Menü, Buttons und Teasern passen sich automatisch an. |
+
+Die Live-Seite baut nach jeder Veröffentlichung automatisch neu (Webhook), Änderungen sind nach etwa einer Minute sichtbar.
+
 ## 2. Netlify einrichten
 
 1. Das Repository zu GitHub oder GitLab pushen und in Netlify unter *Add new site → Import an existing project* verbinden. Build-Einstellungen kommen aus `netlify.toml`.

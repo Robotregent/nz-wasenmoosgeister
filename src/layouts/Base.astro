@@ -10,9 +10,11 @@ interface Props {
   description?: string;
   config: Record<string, any>;
   updatedAt?: string | null;
+  /** UUIDs der veröffentlichten Seiten (für das Ausblenden von Menüpunkten). */
+  availablePages?: Set<string>;
 }
 
-const { title, description, config, updatedAt } = Astro.props;
+const { title, description, config, updatedAt, availablePages } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -42,11 +44,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     >
       Direkt zum Seiteninhalt
     </a>
-    <Header config={config} currentPath={Astro.url.pathname} />
+    <Header config={config} currentPath={Astro.url.pathname} availablePages={availablePages} />
     <main id="inhalt" class="flex-1">
       <slot />
     </main>
-    <Footer config={config} updatedAt={updatedAt} />
+    <Footer config={config} updatedAt={updatedAt} availablePages={availablePages} />
     {isPreview && <StoryblokPreview liveUpdate />}
   </body>
 </html>

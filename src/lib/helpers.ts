@@ -1,6 +1,7 @@
 /** Hilfsfunktionen für Storyblok-Feldwerte (Links, Assets, Datum). */
 
 export interface Multilink {
+  id?: string;
   linktype?: "url" | "story" | "email" | "asset";
   url?: string;
   cached_url?: string;
@@ -86,4 +87,25 @@ export function formatDate(date: Date, opts: Intl.DateTimeFormatOptions) {
 export function fileExtension(asset?: Asset | null): string {
   const m = asset?.filename?.match(/\.([a-z0-9]{2,5})(?:$|\?)/i);
   return m ? m[1].toUpperCase() : "";
+}
+
+export interface NavItem {
+  label: string;
+  href: string;
+}
+
+/**
+ * Sichtbare Menüpunkte: ohne „Im Menü ausblenden“, ohne leere Links und ohne interne Links
+ * auf Seiten, die nicht (mehr) veröffentlicht sind (`availablePages` = UUIDs der ausgelieferten Seiten).
+ */
+export function navItems(items: any[] | undefined, availablePages?: Set<string>): NavItem[] {
+  return (items ?? [])
+    .filter((item) => !item.hidden)
+    .filter((item) => {
+      const link: Multilink | undefined = item.link;
+      if (link?.linktype !== "story" || !availablePages) return true;
+      return !!link.id && availablePages.has(link.id);
+    })
+    .map((item) => ({ label: item.label, href: linkHref(item.link) }))
+    .filter((item) => item.href);
 }

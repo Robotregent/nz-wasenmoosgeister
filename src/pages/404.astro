@@ -1,11 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
-import { getStory } from "../lib/storyblok";
+import { getAllStories, pageUuids } from "../lib/storyblok";
 
-const config = await getStory("config");
+const stories = await getAllStories();
+const config = stories.find((s) => s.full_slug === "config");
 ---
 
-<Base title="Seite nicht gefunden" config={config?.content ?? {}}>
+<Base title="Seite nicht gefunden" config={config?.content ?? {}} availablePages={pageUuids(stories)}>
   <section class="container-page py-24 text-center">
     <p class="font-serif text-7xl font-semibold text-moss-700">404</p>
     <h1 class="mt-4 text-3xl font-semibold">Hier spukt's nur – Seite nicht gefunden</h1>

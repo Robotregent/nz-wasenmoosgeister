@@ -1,16 +1,14 @@
 ---
-import { linkHref } from "../lib/helpers";
+import { navItems } from "../lib/helpers";
 
 interface Props {
   config: Record<string, any>;
   currentPath: string;
+  availablePages?: Set<string>;
 }
 
-const { config, currentPath } = Astro.props;
-const nav: { label: string; href: string }[] = (config.nav ?? []).map((n: any) => ({
-  label: n.label,
-  href: linkHref(n.link) || "/",
-}));
+const { config, currentPath, availablePages } = Astro.props;
+const nav = navItems(config.nav, availablePages);
 const normalize = (p: string) => p.replace(/\/+$/, "") || "/";
 const isActive = (href: string) => normalize(href) === normalize(currentPath);
 const logo = config.logo?.filename;

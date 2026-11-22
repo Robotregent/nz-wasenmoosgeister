@@ -1,15 +1,15 @@
 ---
-import { formatDate, linkHref } from "../lib/helpers";
+import { formatDate, navItems } from "../lib/helpers";
 
 interface Props {
   config: Record<string, any>;
   updatedAt?: string | null;
+  availablePages?: Set<string>;
 }
 
-const { config, updatedAt } = Astro.props;
-const toLinks = (items: any[] = []) => items.map((n) => ({ label: n.label, href: linkHref(n.link) || "/" }));
-const nav = toLinks(config.nav);
-const legal = toLinks(config.footer_nav);
+const { config, updatedAt, availablePages } = Astro.props;
+const nav = navItems(config.nav, availablePages);
+const legal = navItems(config.footer_nav, availablePages);
 const addressLines: string[] = (config.address ?? "").split("\n").filter(Boolean);
 const updated = updatedAt ? formatDate(new Date(updatedAt), { day: "2-digit", month: "2-digit", year: "numeric" }) : null;
 const year = new Date().getFullYear();
