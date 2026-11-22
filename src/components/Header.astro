@@ -1,0 +1,108 @@
+---
+import { linkHref } from "../lib/helpers";
+
+interface Props {
+  config: Record<string, any>;
+  currentPath: string;
+}
+
+const { config, currentPath } = Astro.props;
+const nav: { label: string; href: string }[] = (config.nav ?? []).map((n: any) => ({
+  label: n.label,
+  href: linkHref(n.link) || "/",
+}));
+const normalize = (p: string) => p.replace(/\/+$/, "") || "/";
+const isActive = (href: string) => normalize(href) === normalize(currentPath);
+const logo = config.logo?.filename;
+---
+
+<header class="sticky top-0 z-40 border-b border-bark-200/60 bg-linen/90 backdrop-blur supports-[backdrop-filter]:bg-linen/75">
+  <div class="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
+    <a href="/" class="flex min-w-0 items-center gap-3" aria-label={`${config.site_name} – Startseite`}>
+      {
+        logo ? (
+          <img src={logo} alt="" width="48" height="48" class="size-10 shrink-0 object-contain lg:size-12" />
+        ) : (
+          <img src="/logo.svg" alt="" width="48" height="48" class="size-10 shrink-0 lg:size-12" />
+        )
+      }
+      <span class="truncate font-serif text-lg leading-tight font-semibold text-bark-900 lg:text-xl">
+        {config.site_name}
+      </span>
+    </a>
+
+    <nav aria-label="Hauptmenü" class="hidden lg:block">
+      <ul class="flex items-center gap-1" role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                class="rounded-full px-3 py-2 text-sm font-medium text-bark-800 transition-colors hover:bg-moss-100 hover:text-moss-900 aria-[current=page]:bg-moss-700 aria-[current=page]:text-linen"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      class="inline-flex size-11 items-center justify-center rounded-full text-bark-900 hover:bg-moss-100 lg:hidden"
+    >
+      <span class="sr-only">Menü öffnen</span>
+      <svg data-icon-open class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+      <svg data-icon-close class="hidden size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav id="mobile-menu" aria-label="Hauptmenü mobil" hidden class="border-t border-bark-200/60 bg-linen lg:hidden">
+    <ul class="container-page flex flex-col py-3" role="list">
+      {
+        nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
+              class="block rounded-xl px-3 py-3 text-base font-medium text-bark-800 hover:bg-moss-100 aria-[current=page]:bg-moss-100 aria-[current=page]:text-moss-900"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = document.getElementById("mobile-menu");
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.querySelector(".sr-only")!.textContent = open ? "Menü schließen" : "Menü öffnen";
+      toggle.querySelector("[data-icon-open]")?.classList.toggle("hidden", open);
+      toggle.querySelector("[data-icon-close]")?.classList.toggle("hidden", !open);
+      menu.hidden = !open;
+    };
+    toggle.addEventListener("click", () => setOpen(menu.hidden === true));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !menu.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    matchMedia("(min-width: 1024px)").addEventListener("change", (e) => e.matches && setOpen(false));
+  }
+</script>

@@ -1,0 +1,34 @@
+---
+import { imageUrl } from "../lib/helpers";
+
+const { block, editable } = Astro.props;
+const src = imageUrl(block.image, 240, 240);
+const initials = (block.name ?? "")
+  .split(" ")
+  .map((n: string) => n[0])
+  .join("")
+  .slice(0, 2);
+---
+
+<li {...editable} class="flex items-center gap-4 rounded-2xl border border-bark-200/70 bg-white/70 p-5 shadow-sm">
+  {
+    src ? (
+      <img src={src} alt="" width="80" height="80" loading="lazy" class="size-20 shrink-0 rounded-full object-cover" />
+    ) : (
+      <div aria-hidden="true" class="grid size-20 shrink-0 place-items-center rounded-full bg-moss-100 font-serif text-2xl font-semibold text-moss-700">
+        {initials}
+      </div>
+    )
+  }
+  <div class="min-w-0">
+    <p class="text-sm font-medium text-moss-700">{block.role}</p>
+    <h3 class="text-lg font-semibold">{block.name}</h3>
+    {
+      block.email && (
+        <a href={`mailto:${block.email}`} class="mt-1 block text-sm break-all text-bark-700 underline-offset-4 hover:text-moss-800 hover:underline">
+          {block.email}
+        </a>
+      )
+    }
+  </div>
+</li>

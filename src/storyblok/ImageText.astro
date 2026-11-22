@@ -1,0 +1,31 @@
+---
+import { StoryblokRichText } from "./index";
+import { imageUrl } from "../lib/helpers";
+
+const { block, editable } = Astro.props;
+const src = imageUrl(block.image, 1000, 750);
+const imageLeft = block.image_position === "left";
+---
+
+<section {...editable} class="container-page pt-12 sm:pt-16">
+  <div class="grid items-center gap-8 md:grid-cols-2 md:gap-12">
+    <div class:list={["prose-earth", imageLeft && "md:order-2"]}>
+      <StoryblokRichText document={block.text} />
+    </div>
+    {
+      src && (
+        <figure class:list={[imageLeft && "md:order-1"]}>
+          <img
+            src={src}
+            alt={block.image?.alt ?? ""}
+            width="1000"
+            height="750"
+            loading="lazy"
+            class="aspect-[4/3] w-full rounded-2xl object-cover shadow-md ring-1 ring-bark-200/60"
+          />
+          {block.image?.title && <figcaption class="mt-2 text-sm text-bark-600">{block.image.title}</figcaption>}
+        </figure>
+      )
+    }
+  </div>
+</section>

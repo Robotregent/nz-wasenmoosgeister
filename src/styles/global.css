@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", ui-serif, Georgia, serif;
+
+  /* Moos – Grüntöne */
+  --color-moss-50: #f2f5ee;
+  --color-moss-100: #e1e9d7;
+  --color-moss-200: #c3d3b0;
+  --color-moss-300: #9db683;
+  --color-moss-400: #7a9a5d;
+  --color-moss-500: #5e7f44;
+  --color-moss-600: #4a6636;
+  --color-moss-700: #3b512c;
+  --color-moss-800: #2f4025;
+  --color-moss-900: #24311d;
+
+  /* Rinde – Brauntöne */
+  --color-bark-50: #f8f3ed;
+  --color-bark-100: #ede1d1;
+  --color-bark-200: #dcc4a6;
+  --color-bark-300: #c6a27a;
+  --color-bark-400: #b0845a;
+  --color-bark-500: #966b45;
+  --color-bark-600: #7a5539;
+  --color-bark-700: #5f4230;
+  --color-bark-800: #4a3428;
+  --color-bark-900: #3a2a21;
+
+  /* Torf – fast schwarzes Braun für Text */
+  --color-peat: #241c16;
+
+  /* Leinen / Sand – warme Hintergründe */
+  --color-linen: #f6f1e7;
+  --color-sand: #ebe2d0;
+
+  /* Ocker – Akzent */
+  --color-ochre: #c38b2c;
+  --color-ochre-dark: #9c6d1d;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-linen font-sans text-peat antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif text-bark-900;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ochre;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+@utility prose-earth {
+  @apply prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-bark-900
+    prose-p:text-peat prose-a:text-moss-700 prose-a:underline-offset-4 hover:prose-a:text-moss-900
+    prose-strong:text-bark-900 prose-li:marker:text-moss-500 prose-blockquote:border-moss-400;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold
+    transition-colors duration-200;
+}
+@utility btn-primary {
+  @apply btn bg-moss-700 text-linen hover:bg-moss-800;
+}
+@utility btn-secondary {
+  @apply btn border border-bark-300 bg-white/60 text-bark-800 hover:border-bark-500 hover:bg-white;
+}
+@utility btn-accent {
+  @apply btn bg-ochre text-peat hover:bg-ochre-dark hover:text-linen;
+}

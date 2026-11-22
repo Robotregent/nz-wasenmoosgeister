@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import { getStory } from "../lib/storyblok";
+
+const config = await getStory("config");
+---
+
+<Base title="Seite nicht gefunden" config={config?.content ?? {}}>
+  <section class="container-page py-24 text-center">
+    <p class="font-serif text-7xl font-semibold text-moss-700">404</p>
+    <h1 class="mt-4 text-3xl font-semibold">Hier spukt's nur – Seite nicht gefunden</h1>
+    <p class="mt-3 text-bark-700">Der Wasenmoosgeist hat diese Seite wohl im Nebel versteckt.</p>
+    <a href="/" class="btn-primary mt-8">Zur Startseite</a>
+  </section>
+</Base>

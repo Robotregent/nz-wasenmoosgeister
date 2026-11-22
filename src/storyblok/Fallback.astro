@@ -1,0 +1,14 @@
+---
+const { block, editable } = Astro.props;
+const showHint = import.meta.env.DEV;
+---
+
+{
+  showHint && (
+    <div {...editable} class="container-page my-6">
+      <p class="rounded-lg border border-dashed border-ochre bg-ochre/10 p-4 text-sm">
+        Block <code>{block.component}</code> ist im Frontend noch nicht umgesetzt.
+      </p>
+    </div>
+  )
+}

@@ -1,0 +1,52 @@
+---
+import "../styles/global.css";
+import { StoryblokPreview } from "@storyblok/astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { isPreview } from "../lib/storyblok";
+
+interface Props {
+  title: string;
+  description?: string;
+  config: Record<string, any>;
+  updatedAt?: string | null;
+}
+
+const { title, description, config, updatedAt } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#3b512c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content={config.site_name} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonical} />
+    {isPreview && <meta name="robots" content="noindex, nofollow" />}
+    {!isPreview && <link rel="sitemap" href="/sitemap-index.xml" />}
+  </head>
+  <body class="flex min-h-svh flex-col">
+    <a
+      href="#inhalt"
+      class="sr-only z-50 rounded-full bg-moss-700 px-4 py-2 text-linen focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+    >
+      Direkt zum Seiteninhalt
+    </a>
+    <Header config={config} currentPath={Astro.url.pathname} />
+    <main id="inhalt" class="flex-1">
+      <slot />
+    </main>
+    <Footer config={config} updatedAt={updatedAt} />
+    {isPreview && <StoryblokPreview liveUpdate />}
+  </body>
+</html>

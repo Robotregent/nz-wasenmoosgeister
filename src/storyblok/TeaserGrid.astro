@@ -1,0 +1,13 @@
+---
+import type { StoryblokBlockData } from "@storyblok/astro";
+import { StoryblokBlock } from "./index";
+
+const { block, editable } = Astro.props;
+---
+
+<section {...editable} class="container-page pt-16 sm:pt-24">
+  {block.title && <h2 class="mb-8 text-3xl font-semibold sm:text-4xl">{block.title}</h2>}
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {block.items?.map((item: StoryblokBlockData) => <StoryblokBlock block={item} />)}
+  </div>
+</section>

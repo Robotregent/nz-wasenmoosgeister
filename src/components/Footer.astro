@@ -1,0 +1,55 @@
+---
+import { formatDate, linkHref } from "../lib/helpers";
+
+interface Props {
+  config: Record<string, any>;
+  updatedAt?: string | null;
+}
+
+const { config, updatedAt } = Astro.props;
+const toLinks = (items: any[] = []) => items.map((n) => ({ label: n.label, href: linkHref(n.link) || "/" }));
+const nav = toLinks(config.nav);
+const legal = toLinks(config.footer_nav);
+const addressLines: string[] = (config.address ?? "").split("\n").filter(Boolean);
+const updated = updatedAt ? formatDate(new Date(updatedAt), { day: "2-digit", month: "2-digit", year: "numeric" }) : null;
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-auto bg-peat text-bark-100">
+  <div class="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:py-16">
+    <div class="lg:col-span-2">
+      <p class="font-serif text-2xl font-semibold text-linen">{config.site_name}</p>
+      {config.site_claim && <p class="mt-2 font-serif text-lg text-ochre italic">„{config.site_claim}“</p>}
+      <address class="mt-6 text-sm leading-relaxed not-italic">
+        {addressLines.map((l) => <span class="block">{l}</span>)}
+        {
+          config.email && (
+            <a href={`mailto:${config.email}`} class="mt-2 inline-block text-moss-200 underline-offset-4 hover:text-linen hover:underline">
+              {config.email}
+            </a>
+          )
+        }
+      </address>
+    </div>
+
+    <nav aria-label="Seiten">
+      <p class="text-sm font-semibold tracking-wide text-linen uppercase">Seiten</p>
+      <ul class="mt-4 space-y-2 text-sm" role="list">
+        {nav.map((l) => <li><a href={l.href} class="hover:text-linen hover:underline">{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Rechtliches">
+      <p class="text-sm font-semibold tracking-wide text-linen uppercase">Rechtliches</p>
+      <ul class="mt-4 space-y-2 text-sm" role="list">
+        {legal.map((l) => <li><a href={l.href} class="hover:text-linen hover:underline">{l.label}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="container-page flex flex-col gap-2 py-5 text-xs text-bark-300 sm:flex-row sm:justify-between">
+      <p>© {year} {config.site_name}</p>
+      {updated && <p>Letzte Aktualisierung: {updated}</p>}
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,15 @@
+---
+const { block, editable } = Astro.props;
+---
+
+<header {...editable} class="relative overflow-hidden border-b border-bark-200/60 bg-sand">
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 opacity-40 [background:radial-gradient(60rem_20rem_at_10%_-20%,var(--color-moss-200),transparent),radial-gradient(40rem_16rem_at_100%_120%,var(--color-bark-200),transparent)]"
+  >
+  </div>
+  <div class="container-page relative py-12 sm:py-16">
+    <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{block.title}</h1>
+    {block.intro && <p class="mt-4 max-w-2xl text-lg text-bark-700">{block.intro}</p>}
+  </div>
+</header>

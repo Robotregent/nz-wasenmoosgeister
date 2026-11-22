@@ -1,0 +1,11 @@
+---
+import { StoryblokRichText } from "./index";
+
+const { block, editable } = Astro.props;
+---
+
+<section {...editable} class="container-page pt-12 sm:pt-16">
+  <div class="prose-earth max-w-3xl">
+    <StoryblokRichText document={block.text} />
+  </div>
+</section>

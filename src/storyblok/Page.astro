@@ -1,0 +1,10 @@
+---
+import type { StoryblokBlockData } from "@storyblok/astro";
+import { StoryblokBlock } from "./index";
+
+const { block, editable } = Astro.props;
+---
+
+<div {...editable} class="pb-16 sm:pb-24">
+  {block.body?.map((child: StoryblokBlockData) => <StoryblokBlock block={child} />)}
+</div>

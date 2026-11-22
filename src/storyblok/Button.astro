@@ -1,0 +1,19 @@
+---
+import { linkAttrs } from "../lib/helpers";
+
+const { block, editable } = Astro.props;
+const variants: Record<string, string> = {
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  accent: "btn-accent",
+};
+const attrs = linkAttrs(block.link);
+---
+
+{
+  attrs.href && (
+    <a {...editable} {...attrs} class={variants[block.variant] ?? variants.primary}>
+      {block.label}
+    </a>
+  )
+}

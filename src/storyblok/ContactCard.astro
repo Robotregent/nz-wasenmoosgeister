@@ -1,0 +1,67 @@
+---
+import type { StoryblokBlockData } from "@storyblok/astro";
+import { StoryblokBlock } from "./index";
+
+const { block, editable } = Astro.props;
+const mapsQuery = encodeURIComponent(`${block.street}, ${block.zip_city}`);
+---
+
+<section {...editable} class="container-page pt-12 sm:pt-16">
+  <div class="grid gap-6 md:grid-cols-2">
+    <div class="rounded-2xl border border-bark-200/70 bg-white/70 p-6 shadow-sm sm:p-8">
+      {block.title && <h2 class="text-2xl font-semibold">{block.title}</h2>}
+      <address class="mt-4 space-y-1 text-lg not-italic">
+        <strong class="block font-semibold text-bark-900">{block.name}</strong>
+        <span class="block">{block.street}</span>
+        <span class="block">{block.zip_city}</span>
+      </address>
+      <dl class="mt-6 space-y-2">
+        {
+          block.email && (
+            <div class="flex gap-2">
+              <dt class="font-medium text-bark-600">E-Mail:</dt>
+              <dd>
+                <a href={`mailto:${block.email}`} class="break-all text-moss-700 underline underline-offset-4 hover:text-moss-900">
+                  {block.email}
+                </a>
+              </dd>
+            </div>
+          )
+        }
+        {
+          block.phone && (
+            <div class="flex gap-2">
+              <dt class="font-medium text-bark-600">Telefon:</dt>
+              <dd>
+                <a href={`tel:${block.phone.replace(/\s/g, "")}`} class="text-moss-700 underline underline-offset-4">
+                  {block.phone}
+                </a>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+      {
+        block.buttons?.length > 0 && (
+          <div class="mt-8 flex flex-wrap gap-3">
+            {block.buttons.map((b: StoryblokBlockData) => <StoryblokBlock block={b} />)}
+          </div>
+        )
+      }
+    </div>
+    <div class="flex flex-col justify-between gap-6 rounded-2xl bg-moss-800 p-6 text-linen sm:p-8">
+      <div>
+        <h2 class="text-2xl font-semibold text-linen">So findest du uns</h2>
+        <p class="mt-3 text-moss-100">Höll ist ein Ortsteil von Tettnang im Bodenseekreis – direkt am Wasenmoos.</p>
+      </div>
+      <a
+        href={`https://www.openstreetmap.org/search?query=${mapsQuery}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-accent self-start"
+      >
+        Auf der Karte anzeigen
+      </a>
+    </div>
+  </div>
+</section>

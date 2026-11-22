@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nz-wasenmoosgeister-hoell.de/sitemap-index.xml

@@ -1,0 +1,37 @@
+---
+import type { StoryblokBlockData } from "@storyblok/astro";
+import { StoryblokBlock } from "./index";
+import { imageUrl } from "../lib/helpers";
+
+const { block, editable } = Astro.props;
+const src = imageUrl(block.image, 2000) || "/placeholders/hero.svg";
+---
+
+<section {...editable} class="relative isolate overflow-hidden bg-moss-900 text-linen">
+  <img
+    src={src}
+    alt={block.image?.alt ?? ""}
+    width="1600"
+    height="900"
+    fetchpriority="high"
+    class="absolute inset-0 -z-10 h-full w-full object-cover opacity-70"
+  />
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-t from-peat/90 via-peat/50 to-moss-900/30"></div>
+
+  <div class="container-page flex min-h-[70svh] flex-col justify-end py-16 sm:min-h-[75svh] sm:py-24">
+    {block.eyebrow && <p class="text-sm font-medium tracking-wide text-moss-100 uppercase sm:text-base">{block.eyebrow}</p>}
+    <h1 class="mt-3 max-w-3xl text-4xl leading-tight font-semibold text-linen sm:text-6xl">{block.headline}</h1>
+    {
+      block.quote && (
+        <p class="mt-6 font-serif text-2xl text-ochre italic sm:text-3xl">„{block.quote}“</p>
+      )
+    }
+    {
+      block.buttons?.length > 0 && (
+        <div class="mt-8 flex flex-wrap gap-3">
+          {block.buttons.map((b: StoryblokBlockData) => <StoryblokBlock block={b} />)}
+        </div>
+      )
+    }
+  </div>
+</section>

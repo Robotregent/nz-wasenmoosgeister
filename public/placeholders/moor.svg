@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3d3b0"/><stop offset="1" stop-color="#ede1d1"/></linearGradient><filter id="b"><feGaussianBlur stdDeviation="10"/></filter></defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <path d="M0 300 Q200 260 400 290 T800 280 V500 H0Z" fill="#5e7f44"/>
+  <path d="M0 360 Q250 330 500 360 T800 350 V500 H0Z" fill="#7a5539"/>
+  <g fill="#3b512c"><path d="M120 300 l18-70 18 70z"/><path d="M160 300 l14-55 14 55z"/><path d="M620 290 l20-80 20 80z"/><path d="M670 290 l14-50 14 50z"/></g>
+  <ellipse cx="400" cy="330" rx="360" ry="28" fill="#f6f1e7" opacity=".6" filter="url(#b)"/>
+</svg>

@@ -1,0 +1,35 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getPayload } from "@storyblok/astro";
+import Base from "../layouts/Base.astro";
+import { StoryblokBlock } from "../storyblok";
+import { HIDDEN_SLUGS, getAllStories, getStory, toRouteParam, type Story } from "../lib/storyblok";
+
+export const getStaticPaths = (async () => {
+  const stories = await getAllStories();
+  const config = stories.find((s) => s.full_slug === "config");
+  return stories
+    .filter((s) => !HIDDEN_SLUGS.has(s.full_slug) && s.content.component === "page")
+    .map((story) => ({ params: { slug: toRouteParam(story.full_slug) }, props: { story, config } }));
+}) satisfies GetStaticPaths;
+
+// Statischer Build: Story kommt aus getStaticPaths. Preview (SSR): live laden bzw. Visual-Editor-Payload.
+let story = Astro.props.story as Story | undefined;
+let config = Astro.props.config as Story | undefined;
+
+if (!story) {
+  const slug = Astro.params.slug || "home";
+  if (HIDDEN_SLUGS.has(slug)) return new Response(null, { status: 404 });
+  const payload = await getPayload<object, Story>({ locals: Astro.locals });
+  [story, config] = await Promise.all([payload.story ?? getStory(slug), getStory("config")]);
+  if (!story) return new Response("Seite nicht gefunden", { status: 404 });
+}
+
+const siteName = config?.content.site_name ?? "NZ Wasenmoosgeister Höll e.V.";
+const seoTitle = story.content.seo_title || (story.full_slug === "home" ? "" : story.name);
+const title = seoTitle ? `${seoTitle} – ${siteName}` : siteName;
+---
+
+<Base title={title} description={story.content.seo_description} config={config?.content ?? {}} updatedAt={story.published_at}>
+  <StoryblokBlock block={story.content} />
+</Base>

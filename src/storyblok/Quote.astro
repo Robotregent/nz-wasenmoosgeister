@@ -1,0 +1,13 @@
+---
+const { block, editable } = Astro.props;
+---
+
+<section {...editable} class="container-page pt-16 sm:pt-20">
+  <figure class="relative overflow-hidden rounded-3xl bg-moss-800 px-6 py-12 text-center text-linen sm:px-12 sm:py-16">
+    <div aria-hidden="true" class="absolute -top-10 left-4 font-serif text-[10rem] leading-none text-moss-600/50">„</div>
+    {block.label && <figcaption class="relative text-sm font-medium tracking-wide text-moss-200 uppercase">{block.label}</figcaption>}
+    <blockquote class="relative mt-3 font-serif text-3xl font-semibold text-balance text-linen italic sm:text-5xl">
+      {block.text}
+    </blockquote>
+  </figure>
+</section>
