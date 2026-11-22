@@ -15,7 +15,7 @@ import { components } from "./components.mjs";
 import { allStories } from "./content.mjs";
 
 const TOKEN = process.env.STORYBLOK_MANAGEMENT_TOKEN;
-const SPACE_ID = process.env.STORYBLOK_SPACE_ID;
+const SPACE_ID = process.env.STORYBLOK_SPACE_ID?.replace(/^#/, "");
 const API = process.env.STORYBLOK_MAPI_URL || "https://mapi.storyblok.com/v1";
 const args = new Set(process.argv.slice(2));
 const PUBLIC_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../public");
@@ -27,18 +27,27 @@ if (!TOKEN || !SPACE_ID) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+class ApiError extends Error {
+  constructor(message, status, data) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+}
+
 async function api(method, path, body, attempt = 1) {
   const res = await fetch(`${API}/spaces/${SPACE_ID}${path}`, {
     method,
     headers: { Authorization: TOKEN, "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
-  if (res.status === 429 && attempt < 6) {
+  const data = res.status === 204 ? null : await res.json().catch(() => null);
+  // 429 = Rate-Limit; Storyblok nutzt 429 aber auch für Plan-Beschränkungen (error_code) – die nicht wiederholen.
+  if (res.status === 429 && !data?.error_code && attempt < 6) {
     await sleep(1000 * attempt);
     return api(method, path, body, attempt + 1);
   }
-  const data = res.status === 204 ? null : await res.json().catch(() => null);
-  if (!res.ok) throw new Error(`${method} ${path} → ${res.status} ${JSON.stringify(data)}`);
+  if (!res.ok) throw new ApiError(`${method} ${path} → ${res.status} ${JSON.stringify(data)}`, res.status, data);
   await sleep(200); // Rate-Limit schonen (Free-Plan: 3 Requests/s)
   return data;
 }
@@ -71,7 +80,19 @@ async function uploadAsset(localPath, alt) {
 
   const file = join(PUBLIC_DIR, localPath);
   const { size } = await stat(file);
-  const signed = await api("POST", "/assets", { filename: basename(file), size });
+  let signed;
+  try {
+    signed = await api("POST", "/assets", { filename: basename(file), size });
+  } catch (err) {
+    // Free-Plan: manche Dateitypen (z. B. SVG, PDF) nur mit hinterlegter Kreditkarte.
+    if (err instanceof ApiError && err.data?.error_code) {
+      console.warn(`  ! Asset ${localPath} nicht hochgeladen (${err.data.error}) – lokaler Pfad bleibt erhalten`);
+      const asset = { id: null, filename: localPath, alt, title: alt, name: "", focus: "", fieldtype: "asset" };
+      assetCache.set(localPath, asset);
+      return asset;
+    }
+    throw err;
+  }
 
   const form = new FormData();
   for (const [k, v] of Object.entries(signed.fields)) form.append(k, v);
@@ -89,7 +110,12 @@ async function uploadAsset(localPath, alt) {
 
 /** Ersetzt lokale Asset-Pfade (/placeholders/…, /downloads/…) rekursiv durch hochgeladene Assets. */
 async function replaceLocalAssets(value) {
-  if (Array.isArray(value)) return Promise.all(value.map(replaceLocalAssets));
+  // Sequentiell statt parallel: schont das Rate-Limit und vermeidet doppelte Uploads.
+  if (Array.isArray(value)) {
+    const out = [];
+    for (const v of value) out.push(await replaceLocalAssets(v));
+    return out;
+  }
   if (value && typeof value === "object") {
     if (value.fieldtype === "asset" && value.filename?.startsWith("/")) {
       return uploadAsset(value.filename, value.alt ?? "");

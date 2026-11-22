@@ -116,7 +116,7 @@ export const pages = [
       eyebrow: "Herzlich Willkommen auf den Internetseiten der",
       headline: ZUNFT_NAME,
       quote: NARRENRUF,
-      image: localAsset("/placeholders/hero.svg", "Wasenmoosgeister im Nebel über dem Moor (Platzhalter)"),
+      image: localAsset("/placeholders/hero.png", "Wasenmoosgeister im Nebel über dem Moor (Platzhalter)"),
       buttons: [
         block("button", { label: "Fasnet 2026/27", link: url("/fasnet-2026-27"), variant: "accent" }),
         block("button", { label: "Unsere Geschichte", link: url("/geschichte"), variant: "secondary" }),
@@ -129,19 +129,19 @@ export const pages = [
           title: "Geschichte",
           text: "Wie aus der Sage der Torfstecher im Wasenmoos 1993 eine Fasnetfigur wurde.",
           link: url("/geschichte"),
-          image: localAsset("/placeholders/moor.svg", "Moorlandschaft (Platzhalter)"),
+          image: localAsset("/placeholders/moor.png", "Moorlandschaft (Platzhalter)"),
         }),
         block("teaser", {
           title: "Fasnet 2026/27",
           text: "Alle Termine der kommenden Fasnet – mit Infos und Downloads.",
           link: url("/fasnet-2026-27"),
-          image: localAsset("/placeholders/fasnet.svg", "Narren beim Umzug (Platzhalter)"),
+          image: localAsset("/placeholders/fasnet.png", "Narren beim Umzug (Platzhalter)"),
         }),
         block("teaser", {
           title: "Mitglied werden",
           text: "Spaß an der Fasnet – mit der ganzen Familie. Wir freuen uns auf dich!",
           link: url("/mitglied-werden"),
-          image: localAsset("/placeholders/haes.svg", "Häs der Wasenmoosgeister (Platzhalter)"),
+          image: localAsset("/placeholders/haes.png", "Häs der Wasenmoosgeister (Platzhalter)"),
         }),
       ],
     }),
@@ -171,7 +171,7 @@ export const pages = [
   page("Geschichte", "geschichte", "Die Geschichte des Wasenmoosgeistes – von der Sage der Torfstecher zur Fasnetfigur.", [
     block("page_header", { title: "Geschichte", intro: "Die Geschichte des Wasenmoosgeistes" }),
     block("image_text", {
-      image: localAsset("/placeholders/moor.svg", "Nebel über dem Wasenmoos (Platzhalter)"),
+      image: localAsset("/placeholders/moor.png", "Nebel über dem Wasenmoos (Platzhalter)"),
       image_position: "right",
       text: doc(
         h(2, "Das Wasenmoos"),
@@ -179,7 +179,7 @@ export const pages = [
       ),
     }),
     block("image_text", {
-      image: localAsset("/placeholders/haes.svg", "Häs des Wasenmoosgeistes (Platzhalter)"),
+      image: localAsset("/placeholders/haes.png", "Häs des Wasenmoosgeistes (Platzhalter)"),
       image_position: "left",
       text: doc(
         h(2, "Vom Geist zur Fasnetfigur"),
@@ -208,7 +208,7 @@ export const pages = [
   page("Mitglied werden", "mitglied-werden", "Werde Wasenmoosgeist! Mitglied werden bei der Narrenzunft Wasenmoosgeister Höll e.V.", [
     block("page_header", { title: "Mitglied werden", intro: "Du hast Interesse, ein Wasenmoosgeist zu werden?" }),
     block("image_text", {
-      image: localAsset("/placeholders/fasnet.svg", "Wasenmoosgeister mit Familie bei der Fasnet (Platzhalter)"),
+      image: localAsset("/placeholders/fasnet.png", "Wasenmoosgeister mit Familie bei der Fasnet (Platzhalter)"),
       image_position: "right",
       text: doc(
         p("Du hast Spaß an der Fasnet und willst auch übers Jahr etwas erleben, auch mit der ganzen Familie? Dann melde dich einfach bei uns."),

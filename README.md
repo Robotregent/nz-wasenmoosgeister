@@ -98,3 +98,5 @@ public/placeholders/      Platzhalterbilder (in Storyblok austauschen)
 - **Impressum:** Die Rechtsgrundlage ist von § 5 TMG auf **§ 5 DDG** aktualisiert (das TMG gilt seit Mai 2024 nicht mehr). Die Telefonnummer war auf der alten Seite leer.
 - **Bilder und Logo** sind Platzhalter. Echte Fotos einfach in Storyblok hochladen und austauschen.
 - **Termine** auf der Fasnet-Seite sind Beispiele (mit „(Beispiel)“ markiert).
+- **Downloads (PDF) im Storyblok-Free-Plan:** PDFs und SVGs lassen sich erst hochladen, wenn im Space eine Kreditkarte hinterlegt ist (Starter-Plan bleibt kostenlos). Ohne Karte lehnt Storyblok den Upload ab. Das Seed-Skript behält dann den lokalen Pfad (`/downloads/…` aus `public/`) und gibt eine Warnung aus. Alternative: die Datei woanders ablegen und beim Termin als Link eintragen.
+- Space-ID in `.env` **ohne** führendes `#` eintragen.
